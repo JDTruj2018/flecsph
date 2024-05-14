@@ -236,14 +236,16 @@ psort(std::vector<TYPE> & vec, _Compare comp, int * dist_in) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   char fname[80];
-  sprintf(fname, "%05d.%05d_before.hermes", rank, physics::iteration);
-
   std::ofstream particle_file;
-  particle_file.open(fname);
-  for (TYPE i : vec) {
-    particle_file << i << std::endl;
+
+  if (physics::iteration % 100 == 0) {
+    sprintf(fname, "%05d.%05d_before.hermes", rank, physics::iteration);
+    particle_file.open(fname);
+    for (TYPE i : vec) {
+      particle_file << i << std::endl;
+    }
+    particle_file.close();
   }
-  particle_file.close();
 
   MPI_Datatype MPI_valueType;
   MPI_Type_contiguous(sizeof(TYPE), MPI_CHAR, &MPI_valueType);
@@ -327,14 +329,15 @@ psort(std::vector<TYPE> & vec, _Compare comp, int * dist_in) {
   // delete [] trans_data;
   MPI_Type_free(&MPI_valueType);
 
-  sprintf(fname, "%05d.%05d_after.hermes", rank, physics::iteration);
+  if (physics::iteration % 100 == 0) {
+    sprintf(fname, "%05d.%05d_after.hermes", rank, physics::iteration);
 
-  particle_file.open(fname);
-  for (TYPE i : vec) {
-    particle_file << i << std::endl;
+    particle_file.open(fname);
+    for (TYPE i : vec) {
+      particle_file << i << std::endl;
+    }
+    particle_file.close();
   }
-  particle_file.close();
-
 
   // Finish
   return;
